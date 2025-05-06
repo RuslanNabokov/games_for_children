@@ -1,15 +1,13 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { motion } from "framer-motion";
-import { HeartHandshake } from "lucide-react";
+
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes,Navigate } from 'react-router-dom';
 import Navigation from "./components/Navigation";
-import Home from "./pages/Home";
+import { motion } from "framer-motion";
+import Home from './pages/Home';  // Главная страница с RoadMap
 import Games from "./pages/Games";
-import Progress from "./pages/Progress";
-import BlogPage from "./pages/BlogPage";
-import AuthCard from "./pages/AuthCard";
-import BoardGameHome from "./pages/BoardGame/BoardGameHome";
-import PuzzleStage from "./pages/BoardGame/PuzzleStage";
+import BoardGameHome from './pages/BoardGame/BoardGameHome';  // Старт игры
+import PuzzleStage from './pages/BoardGame/PuzzleStage';  // Страница с уровнями игры
+
 function App() {
   return (
     <Router>
@@ -28,7 +26,10 @@ function App() {
             {/* <Route path="/progress" element={<Progress />} />
             <Route path="/BlogPage" element={<BlogPage />} /> */}
             <Route path="/board-game" element={<BoardGameHome />} />
+            {/* <Route path="/results" element={<BoardGameHome />} /> */}
             <Route path="/board-game/:stageId" element={<PuzzleStage />} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
+
             {/* <Route path="/login" element={<AuthCard />} /> */}
           </Routes>
         </motion.div>

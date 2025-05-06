@@ -34,22 +34,23 @@ const Navigation = () => {
             className={`flex items-center space-x-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform ${isActive("/")}`}
           >
             <span className="animate-bounce">🏡</span>
-            <span className="font-cursive">Home</span>
+            <span className="font-cursive">Домашняя</span>
           </Link>
           <Link
             to="/games"
             className={`flex items-center space-x-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform ${isActive("/games")}`}
           >
             <span className="animate-bounce">🎮</span>
-            <span className="font-cursive">Games</span>
+            <span className="font-cursive">Игры</span>
           </Link>
-          {/* <Link
+          {         /* <Link
             to="/progress"
             className={`flex items-center space-x-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform ${isActive("/progress")}`}
           >
             <span className="animate-bounce">📈</span>
             <span className="font-cursive">Progress</span>
           </Link>
+ 
           <Link
             to="/BlogPage"
             className={`flex items-center space-x-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform ${isActive("/progress")}`}

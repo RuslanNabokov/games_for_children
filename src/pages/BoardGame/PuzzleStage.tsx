@@ -1,154 +1,202 @@
-import React, { useState, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { puzzles } from "./puzzlesData";
-import "../../boardGame.css";
+// src/pages/BoardGame/PuzzleStage.tsx
+import React, { useState, useMemo, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { puzzles } from './puzzlesData';
+import '../../boardGame.css';
 
 interface Answers {
-  [key: number]: string[];
+  [key: number]: string[]; // индекс вопроса → выбранные ответы
 }
 
 export default function PuzzleStage() {
+  /* --------------------------------------------------
+   * 1. ПАРАМЕТРЫ РОУТА И ПОДГОТОВКА ДАННЫХ
+   * -------------------------------------------------- */
   const { stageId } = useParams<{ stageId: string }>();
-  const stage = puzzles.find((p) => p.id === Number(stageId));
-  const nav = useNavigate();
-  const [answers, setAnswers] = useState<Answers>({});
+  const stageIndex  = Number(stageId || 1);
+  const stage       = puzzles.find(p => p.id === stageIndex);
+  const nav         = useNavigate();
 
-  if (!stage) {
-    return <p>Этап не найден.</p>;
-  }
+  /* --------------------------------------------------
+   * 2. ХУКИ STATE / EFFECT (всегда вызываются!)
+   * -------------------------------------------------- */
+  const [answers,  setAnswers]  = useState<Answers>({});
+  const [finished, setFinished] = useState(false);
 
-  const handleOptionChange = (
-    qIdx: number,
-    option: string,
-    multiple: boolean,
-  ) => {
-    setAnswers((prev) => {
+  // При смене этапа очищаем состояние
+  useEffect(() => {
+    setAnswers({});
+    setFinished(false);
+  }, [stageIndex]);
+
+  /* --------------------------------------------------
+   * 3. РАННЯЯ ПРОВЕРКА НАЛИЧИЯ ДАННЫХ (допустимо один раз)
+   * -------------------------------------------------- */
+  if (!stage) return <p>Этап не найден.</p>;
+
+  /* --------------------------------------------------
+   * 4. ЛОКАЛЬНАЯ КОНСТАНТА С ЭМОДЗИ
+   * -------------------------------------------------- */
+  const emojiMap: Record<string, string> = {
+    'Белка': '🐿️',  'Медведь': '🐻',  'Заяц': '🐇',   'Лиса': '🦊',
+    'Утка': '🦆',   'Рыба': '🐟',    'Бобр': '🦫',   'Удочка': '🎣',
+    'Книга': '📚',  'Нож': '🔪'
+  };
+
+  /* --------------------------------------------------
+   * 5. ФУНКЦИИ ДЛЯ ОБНОВЛЕНИЯ ОТВЕТОВ
+   * -------------------------------------------------- */
+  const handleOptionChange = (qIdx: number, value: string, multiple: boolean) => {
+    setAnswers(prev => {
       const current = prev[qIdx] || [];
       const updated = multiple
-        ? current.includes(option)
-          ? current.filter((x) => x !== option)
-          : [...current, option]
-        : [option];
+        ? current.includes(value)
+          ? current.filter(x => x !== value)
+          : [...current, value]
+        : [value];
       return { ...prev, [qIdx]: updated };
     });
   };
 
-  const handleUnderline = (qIdx: number, index: number) => {
-    setAnswers((prev) => {
-      const current = prev[qIdx] || [];
-      const strIdx = index.toString();
-      return {
-        ...prev,
-        [qIdx]: current.includes(strIdx)
-          ? current.filter((x) => x !== strIdx)
-          : [...current, strIdx],
-      };
-    });
-  };
-
+  /* --------------------------------------------------
+   * 6. ПРОВЕРКА КОРРЕКТНОСТИ ЭТАПА (всегда вызывается!)
+   * -------------------------------------------------- */
   const isStageCorrect = useMemo(() => {
     return stage.questions.every((q, idx) => {
       const ans = answers[idx] || [];
-      if (q.type === "mcq") {
-        const correct = [...q.correct].sort();
-        return ans.slice().sort().join() === correct.join();
+      if (q.type === 'mcq') {
+        return ans.slice().sort().join() === [...q.correct].sort().join();
       }
-      if (q.type === "underline" && "correctIndices" in q) {
-        const correct = q.correctIndices.map(String).sort();
-        return ans.slice().sort().join() === correct.join();
-      }
-      if (q.type === "guess") {
-        const input = ans[0] || "";
-        return input.trim().toLowerCase() === q.answer.toLowerCase();
+      if (q.type === 'guess') {
+        return (ans[0] || '').trim().toLowerCase() === q.answer.toLowerCase();
       }
       return false;
     });
   }, [answers, stage.questions]);
 
+  /* --------------------------------------------------
+   * 7. ЗАВЕРШЕНИЕ/ПЕРЕХОД МЕЖДУ ЭТАПАМИ
+   * -------------------------------------------------- */
   const handleComplete = () => {
     if (!isStageCorrect) {
-      alert("Ответ неверен. Пожалуйста, попробуйте ещё раз.");
+      alert('Ответ неверен. Попробуй ещё раз.');
       return;
     }
-    const next = Number(stageId) + 1;
-    nav(next <= puzzles.length ? `/board-game/${next}` : "/games");
+    const next = stageIndex + 1;
+    if (next > puzzles.length) {
+      setFinished(true);
+    } else {
+      nav(`/board-game/${next}`);
+    }
   };
 
+  /* --------------------------------------------------
+   * 8. ПОМОЩЬ: отделяем текст от эмодзи
+   * -------------------------------------------------- */
+  const splitLabel = (opt: string) => {
+    const parts      = opt.trim().split(' ');
+    const maybeEmoji = parts[parts.length - 1];
+    const isEmoji    = /\p{Extended_Pictographic}/u.test(maybeEmoji);
+    const base       = isEmoji ? parts.slice(0, -1).join(' ') : opt;
+    const emoji      = emojiMap[base] || (isEmoji ? maybeEmoji : '');
+    return { base, emoji };
+  };
+
+  /* --------------------------------------------------
+   * 9. ЭКРАН ПОЗДРАВЛЕНИЯ (после всех хуков!)
+   * -------------------------------------------------- */
+  if (finished) {
+    return (
+      <div className="puzzle-complete p-8 text-center bg-green-50 rounded-xl shadow-lg">
+        <h2 className="text-4xl font-bold mb-4">Молодец! 🎉</h2>
+        <p className="text-lg mb-6">Ты прошёл все этапы игры.</p>
+        <button
+          onClick={() => nav('/home')}
+          className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          На главную
+        </button>
+      </div>
+    );
+  }
+
+  /* --------------------------------------------------
+   * 10. ОСНОВНОЙ РЕНДЕР ЭТАПА
+   * -------------------------------------------------- */
   return (
     <div className="puzzle-stage">
-      <h2 className="text-2xl font-semibold mb-6">
+      <h2 className="text-3xl font-bold mb-8">
         Этап {stage.id}: {stage.title}
       </h2>
 
       <div className="questions-wrapper">
         {stage.questions.map((q, i) => (
-          <div key={i} className="question">
-            <p className="mb-3 font-medium">{q.prompt}</p>
+          <div key={i} className="question p-6 bg-white rounded-xl shadow-lg">
+            {Array.isArray(q.images)
+              ? q.images.map(src => (
+                  <img key={src} src={src} alt="ребус" className="mb-4 w-full max-w-xs mx-auto" />
+                ))
+              : q.images && (
+                  <img src={q.images} alt="ребус" className="mb-4 w-full max-w-xs mx-auto" />
+                )}
+            <p className="mb-4 text-lg font-medium">{q.prompt}</p>
+
 
             {/* MCQ */}
-            {q.type === "mcq" && (
-              <div className="options mt-2">
-                {q.options.map((opt) => (
-                  <label key={opt} className="flex items-center mb-2 space-x-2">
-                    <input
-                      type={q.correct.length > 1 ? "checkbox" : "radio"}
-                      name={`q${i}`}
-                      value={opt}
-                      className="form-checkbox"
-                      onChange={() =>
-                        handleOptionChange(i, opt, q.correct.length > 1)
-                      }
-                      checked={answers[i]?.includes(opt) || false}
-                    />
-                    <span>{opt}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-
-            {/* Underline as clickable chips */}
-            {q.type === "underline" && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {q.text.split(" ").map((word, idx) => {
-                  const selected = answers[i]?.includes(idx.toString());
+            {q.type === 'mcq' && (
+              <div className="mt-4 flex flex-wrap gap-4">
+                {q.options.map(opt => {
+                  const { base, emoji } = splitLabel(opt);
+                  const selected  = answers[i]?.includes(opt);
+                  const isCorrect = q.correct.includes(opt);
+                  const btnClass  = selected
+                    ? isCorrect ? 'border-green-600 bg-green-100' : 'border-red-600 bg-red-100'
+                    : 'border-gray-300 hover:bg-gray-100';
                   return (
                     <button
-                      key={idx}
-                      onClick={() => handleUnderline(i, idx)}
-                      className={
-                        `px-2 py-1 rounded border-2 ` +
-                        (selected
-                          ? "border-green-600 underline bg-green-100"
-                          : "border-gray-300 hover:bg-gray-100")
-                      }
+                      key={opt}
+                      onClick={() => handleOptionChange(i, opt, q.correct.length > 1)}
+                      className={`px-6 py-3 rounded-lg border-2 focus:outline-none transition-colors text-lg ${btnClass}`}
                     >
-                      {word}
+                      {base}{emoji && <span className="ml-2 text-xl">{emoji}</span>}
                     </button>
                   );
                 })}
               </div>
             )}
 
-            {/* Guess word */}
-            {q.type === "guess" && (
-              <input
-                type="text"
-                placeholder={q.placeholder || ""}
-                value={answers[i]?.[0] || ""}
-                onChange={(e) => handleOptionChange(i, e.target.value, false)}
-                className="mt-2 border rounded px-3 py-1 w-full"
-              />
-            )}
+            {/* GUESS */}
+            {q.type === 'guess' && (() => {
+              const value       = answers[i]?.[0] || '';
+              const correctFull = q.answer.toLowerCase();
+              const prefixValid = correctFull.startsWith(value.toLowerCase());
+              const inputClass  = value === ''
+                ? 'border-gray-300'
+                : prefixValid
+                  ? value.toLowerCase() === correctFull
+                    ? 'border-green-600 bg-green-100'
+                    : 'border-green-500'
+                  : 'border-red-600 bg-red-100';
+              return (
+                <input
+                  type="text"
+                  placeholder={q.placeholder || ''}
+                  value={value}
+                  onChange={e => handleOptionChange(i, e.target.value, false)}
+                  className={`mt-4 border-2 rounded-lg px-4 py-2 w-full text-lg focus:outline-none transition-colors ${inputClass}`}
+                />
+              );
+            })()}
           </div>
         ))}
       </div>
 
       <button
-        className="btn-next mt-8"
+        className="btn-next mt-10 px-8 py-3 text-xl"
         onClick={handleComplete}
         disabled={!isStageCorrect}
       >
-        {stage.id < puzzles.length ? "Следующий этап" : "Завершить игру"}
+        {stage.id < puzzles.length ? 'Следующий этап' : 'Завершить игру'}
       </button>
     </div>
   );

@@ -1,5 +1,9 @@
 /* boardGame.css */
 
+
+
+
+
 .boardgame-home {
   @apply flex flex-col items-center justify-center min-h-screen p-6 bg-green-50;
 }
@@ -22,6 +26,8 @@
 .questions-wrapper {
   @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full;
 }
+
+.questions-wrapper{ grid-template-columns: repeat(2, minmax(0, 1fr)) }
 
 .question {
   @apply p-4 bg-white rounded-lg shadow-sm;
