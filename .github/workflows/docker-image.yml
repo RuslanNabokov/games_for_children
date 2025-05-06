@@ -1,0 +1,65 @@
+name: Build and Deploy to VPS via Docker Hub
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    environment: ruslan_vm          # <‑‑ тянем secrets из этого env
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. Настройка Docker Buildx
+      - uses: docker/setup-buildx-action@v3
+
+      # 2. Логинимся в Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 3. Сборка и пуш образа
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/learning-adventures:latest
+          # multi‑arch, если нужно:
+          # platforms: linux/amd64,linux/arm64
+
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    environment: ruslan_vm
+
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 176.109.101.91
+          username: deploy            # если нужен другой, сделайте secret SSH_USER
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          script: |
+            set -e
+            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/learning-adventures:latest"
+
+            echo "Pull new image"
+            docker pull $IMAGE
+
+            echo "Stop & remove old container (ignore errors)"
+            docker rm -f learning-adventures || true
+
+            echo "Run new container"
+            docker run -d --name learning-adventures \
+              --restart always \
+              -p 80:80 \
+              $IMAGE
+
+            # Чистим dangling images
+            docker image prune -af
