@@ -38,13 +38,21 @@ jobs:
     environment: ruslan_vm
 
     steps:
+      # 1) добавим known_hosts вручную
+    - name: Write SSH files
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ vars.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ci
+        chmod 600 ~/.ssh/id_ci
+        echo "${{ vars.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+        chmod 644 ~/.ssh/known_hosts
+       # 2)  Deploy
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: 176.109.101.91
-          username: deploy            # если нужен другой, сделайте secret SSH_USER
-          key: ${{ vars.SSH_PRIVATE_KEY }}
-          known_hosts: ${{ vars.SSH_KNOWN_HOSTS }}
+          username: user1            # если нужен другой, сделайте secret SSH_USER
+          key_path: ~/.ssh/id_ci
           script: |
             set -e
             cd /opt/learning-adventures
