@@ -58,7 +58,7 @@ jobs:
         with:
           host: 176.109.101.91         # 176.109.101.91
           username: user1      # deploy‑user (добавьте в secrets)
-          key_path: ~/.ssh/id_ci
+          key: ${{ vars.SSH_PRIVATE_KEY }} 
           script: |
             set -e
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
