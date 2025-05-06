@@ -43,10 +43,11 @@ jobs:
         with:
           host: 176.109.101.91
           username: deploy            # если нужен другой, сделайте secret SSH_USER
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          key: ${{ vars.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ vars.SSH_KNOWN_HOSTS }}
           script: |
             set -e
+            cd /opt/learning-adventures
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/learning-adventures:latest"
 
             echo "Pull new image"
