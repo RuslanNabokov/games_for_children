@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
 
-# переменные, общие для всех шагов
+# переменные, общие для всех шагов 
 env:
   IMAGE_NAME: learning-adventures            # репозиторий в Docker Hub
   SERVER_PATH: /opt/learning-adventures      # где лежит docker‑compose.yml на сервере
