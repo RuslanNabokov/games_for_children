@@ -17,7 +17,7 @@
 }
 
 .btn-start {
-  @apply px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md
+  @apply px-6 py-2 bg-blue-500 text-white  rounded-lg shadow-md
          hover:bg-blue-600 transition-colors;
 }
 
@@ -38,7 +38,7 @@
 }
 
 .btn-next {
-  @apply mt-6 px-5 py-2 bg-green-500 text-white font-medium rounded-lg shadow
+  @apply mt-6 px-5 py-2 bg-green-500 text-white  rounded-lg shadow
          hover:bg-green-600 transition-colors;
 }
 
