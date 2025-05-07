@@ -8,6 +8,7 @@ on:
 env:
   IMAGE_NAME: learning-adventures            # репозиторий в Docker Hub
   SERVER_PATH: /opt/learning-adventures      # где лежит docker‑compose.yml на сервере
+  ADDRESS_SERVER: 10.66.66.1
 
 jobs:
   build-push:
@@ -56,7 +57,7 @@ jobs:
       - name: Deploy on VPS via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: 176.109.101.91         # 176.109.101.91
+          host: ${{ env.ADDRESS_SERVER }}         # 176.109.101.91
           username: user1      # deploy‑user (добавьте в secrets)
           command_timeout: '180s'
           key: ${{ vars.SSH_PRIVATE_KEY }} 
