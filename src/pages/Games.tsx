@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { XCircle } from "lucide-react";
+import { Import, XCircle } from "lucide-react";
 import LetterSoundMatch from "../components/games/LetterSoundMatch";
 import WordRace from "../components/games/WordRace";
 import AlphabetGame from "../components/games/AlphabetGame";
@@ -17,8 +17,9 @@ import Dora from "../assets/Dora.png";
 import Gian from "../assets/Gian.png";
 import RhymingBingo from "../components/games/RhymingBingo";
 import FlipAFix from "../components/games/FlipAFix";
-import Dino from "../assets/dino.jpg";
+import Dino from "../assets/Mickey.png";
 import BoardGameHome from "./BoardGame/BoardGameHome";
+import SpinnerGame from "./Spinner/SpinnerGame";
 const games = [
   // { title: "Letter Sound Match", component: LetterSoundMatch },
   // { title: "Phonics Maze", component: PhonicsMaze },
@@ -29,7 +30,8 @@ const games = [
   // { title: "Memory Game", component: MemoryGame },
   // { title: "Rapid Reaction", component: RapidReaction },
   // { title: "Flip A Fix", component: FlipAFix },
-  { title: "Игра с Дино", component: BoardGameHome },
+  { title: "Викторина с Микки", component: BoardGameHome },
+  { title: "Колесо вопросов с Томом", component: SpinnerGame },
 ];
 
 const playSound = () => {
@@ -40,14 +42,14 @@ const playSound = () => {
 const cartoonImages = [
   // Shinchan,
   // Doraemon,
-  // Tom,
   // Mickey,
   // Dorami,
   // Dora,
   // Gian,
   // Shinchan,
   // Doraemon,
-  Dino,
+  Mickey,
+  Tom
 ];
 
 const Games = () => {
@@ -82,7 +84,7 @@ const Games = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        🌟 Давай сыграем 🌟
+         Давай сыграем
       </motion.h1>
 
       <motion.p

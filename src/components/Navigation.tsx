@@ -1,79 +1,67 @@
-import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Brain, GamepadIcon, LineChart } from "lucide-react";
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { LogOut } from 'lucide-react';
 
-const Navigation = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+/**
+ * Navigation – строгий бар, возвращены минималистичные emoji‑иконки для ссылок
+ */
 
-  // useEffect(() => {
-  //   const name = localStorage.getItem('loggedInUser');
-  //   if (name) setUsername(name);
-  // }, []); delete login
+interface NavItem {
+  to: string;
+  label: string;
+  icon: string; // emoji HTML
+}
 
-  const handleLogout = () => {
-    // localStorage.removeItem("loggedInUser");
-    // localStorage.removeItem("isLoggedIn");
-    // navigate("/login", { replace: true });
-    // window.location.reload();
+const navLinks: NavItem[] = [
+  { to: '/home',     label: 'Главная',   icon: '🏡' },
+  { to: '/games',    label: 'Игры',      icon: '🎮' },
+  // { to: '/progress', label: 'Прогресс',  icon: '📊' },
+  { to: '/about-me', label: 'Обо мне',      icon: '📝' },
+];
+
+export default function Navigation() {
+  const { pathname } = useLocation();
+  const navigate     = useNavigate();
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const name = localStorage.getItem('loggedInUser');
+    if (name) setUsername(name);
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem('loggedInUser');
+    localStorage.removeItem('isLoggedIn');
+    navigate('/login', { replace: true });
   };
 
-  const isActive = (path: string) => {
-    return location.pathname === path
-      ? "bg-pink-200 text-pink-800 shadow-md scale-105"
-      : "text-purple-600 hover:bg-yellow-100 hover:shadow-lg hover:scale-105";
-  };
+  const isActive = (path: string) => (
+    pathname === path ? 'border-b-2 border-blue-500 text-blue-300' : 'hover:text-gray-300'
+  );
 
   return (
-    <nav className="bg-gradient-to-r from-pink-100 via-yellow-100 to-purple-100 py-5 shadow-xl rounded-b-3xl">
-      <div className="container mx-auto px-4 flex justify-between items-center">
-        <div className="flex justify-center space-x-6">
-          <Link
-            to="/"
-            className={`flex items-center space-x-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform ${isActive("/")}`}
-          >
-            <span className="animate-bounce">🏡</span>
-            <span className="font-cursive">Домашняя</span>
-          </Link>
-          <Link
-            to="/games"
-            className={`flex items-center space-x-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform ${isActive("/games")}`}
-          >
-            <span className="animate-bounce">🎮</span>
-            <span className="font-cursive">Игры</span>
-          </Link>
-          {         /* <Link
-            to="/progress"
-            className={`flex items-center space-x-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform ${isActive("/progress")}`}
-          >
-            <span className="animate-bounce">📈</span>
-            <span className="font-cursive">Progress</span>
-          </Link>
- 
-          <Link
-            to="/BlogPage"
-            className={`flex items-center space-x-2 px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 ease-in-out transform ${isActive("/progress")}`}
-          >
-            <span className="animate-bounce">📝</span>
-            <span className="font-cursive">Blog</span>
-          </Link> */}
-        </div>
+    <header className="bg-slate-800 text-white shadow-sm sticky top-0 z-50">
+      <nav className="container mx-auto flex items-center justify-between px-4 py-3">
+        {/* brand */}
+        <Link to="/home" className="text-xl font-semibold tracking-wide select-none">
+          Обучаемся и играем
+        </Link>
 
-        {username && (
-          <div className="flex items-center space-x-4 text-sm font-semibold text-purple-700">
-            <span className="font-cursive">👋 {username}</span>
-            <button
-              onClick={handleLogout}
-              className="bg-pink-500 text-white px-3 py-1 rounded-full hover:bg-pink-600 transition"
-            >
-              Log Out
-            </button>
-          </div>
-        )}
-      </div>
-    </nav>
+        {/* links (desktop) */}
+        <ul className="hidden md:flex gap-6 text-sm font-medium uppercase tracking-wide">
+          {navLinks.map(link => (
+            <li key={link.to} className="flex items-center">
+              <Link to={link.to} className={`flex items-center gap-1 transition-colors ${isActive(link.to)}`}> 
+                <span>{link.icon}</span>
+                <span>{link.label}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {/* user */}
+        {username }
+      </nav>
+    </header>
   );
-};
-
-export default Navigation;
+}
