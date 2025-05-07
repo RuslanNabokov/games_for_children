@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        cursive: ['Comic Neue', 'cursive'],
+        cursive: ['Balsamiq Sans', 'sans-serif'],
       },
       animation: {
         wiggle: 'wiggle 1s ease-in-out infinite',

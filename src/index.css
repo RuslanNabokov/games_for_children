@@ -14,7 +14,8 @@
 
 
 body {
-  font-family: 'Comic Neue', cursive;
+  font-family: "Balsamiq Sans", sans-serif;
+  font-size: 1em;
   background-color: var(--background);
 }
 
