@@ -8,7 +8,7 @@ on:
 env:
   IMAGE_NAME: learning-adventures            # репозиторий в Docker Hub
   SERVER_PATH: /opt/learning-adventures      # где лежит docker‑compose.yml на сервере
-  ADDRESS_SERVER: 10.66.66.1
+  ADDRESS_SERVER: 176.109.101.91
 
 jobs:
   build-push:
