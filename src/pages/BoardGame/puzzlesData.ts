@@ -191,7 +191,7 @@ export const puzzles: Puzzle[] = [
         title: 'Дождевой ребус',
         type: 'guess',
         prompt: 'Реши ребус на картинке и напиши, что нужно взять с собой в дождь.',
-        images: ['/src/assets/rebus-umbrella.png'], // путь к изображению ребуса
+        images: ['/assets/rebus-umbrella.png'], // путь к изображению ребуса
         answer: 'зонт',
         placeholder: 'Введите слово',
       }

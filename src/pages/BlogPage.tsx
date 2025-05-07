@@ -8,7 +8,7 @@ export default function AboutMe() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-center gap-6">
           <img
-            src="/src/assets/anya.jpg"
+            src="/assets/anya.jpg"
             alt="Фото Анны"
             className="w-40 h-40 rounded-full object-cover shadow-lg"
           />
@@ -45,7 +45,7 @@ export default function AboutMe() {
           </p>
           <div className="flex justify-center sm:justify-start mt-6">
   <img
-    src="/src/assets/anya2.jpg"
+    src="/assets/anya2.jpg"
     alt="Анна на занятии"
     className="
       w-[250px] h-[250px]           /* задаём размер напрямую */

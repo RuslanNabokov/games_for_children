@@ -19,7 +19,7 @@
       id: 1,
       color: "#ff8c00", // оранжевый
       label: "Космос",
-      image: "/src/assets/sector-space.png",
+      image: "/assets/sector-space.png",
       questions: [
         { q: "Откуда ракета отправляется в космос?",                     a: "космодром" },
         { q: "Как называют космический дом на орбите?",                 a: "космическая станция" },
@@ -33,7 +33,7 @@
       id: 2,
       color: "#0054a6", // синий
       label: "Воздух",
-      image: "/src/assets/sector-air.png",
+      image: "/assets/sector-air.png",
       questions: [
         { q: "Как называется команда, управляющая воздушным судном?",    a: "экипаж" },
         { q: "Кто управляет самолётом?",                                 a: "пилот" },
@@ -47,7 +47,7 @@
       id: 3,
       color: "#e40000", // красный
       label: "Суша (транспорт)",
-      image: "/src/assets/sector-land.png",
+      image: "/assets/sector-land.png",
       questions: [
         { q: "Как называют машину, перевозящую много пассажиров?",        a: "автобус" },
         { q: "Двухколёсное средство с педалями?",                         a: "велосипед" },
@@ -61,7 +61,7 @@
       id: 4,
       color: "#ffeb3b", // жёлтый
       label: "Вода",
-      image: "/src/assets/sector-water.png",
+      image: "/assets/sector-water.png",
       questions: [
         { q: "Как называется дом моряка на воде?",                        a: "корабль" },
         { q: "Судно без мотора и без вёсел, которое тянут?",             a: "баржа" },
@@ -75,7 +75,7 @@
       id: 5,
       color: "#4caf50", // зелёный
       label: "Город",
-      image: "/src/assets/sector-city.png",
+      image: "/assets/sector-city.png",
       questions: [
         { q: "Высокое здание называется...?",                             a: "небоскрёб" },
         { q: "Где люди ходят через дорогу?",                              a: "пешеходный переход" },
