@@ -58,6 +58,7 @@ jobs:
         with:
           host: 176.109.101.91         # 176.109.101.91
           username: user1      # deploy‑user (добавьте в secrets)
+          command_timeout: '180s'
           key: ${{ vars.SSH_PRIVATE_KEY }} 
           script: |
             set -e
