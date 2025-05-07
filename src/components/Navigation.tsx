@@ -41,26 +41,33 @@ export default function Navigation() {
 
   return (
     <header className="bg-slate-800 text-white shadow-sm sticky top-0 z-50">
-      <nav className="container mx-auto flex items-center justify-between px-4 py-3">
+      <nav className="container mx-auto flex flex-col md:flex-row items-center md:justify-between gap-3 px-4 py-3 ">
         {/* brand */}
-        <Link to="/home" className="text-xl font-semibold tracking-wide select-none">
-          Обучаемся и играем
+        <Link to="/home" className="hidden md:flex  font-semibold tracking-wide select-none">
+          Обучаемся и играем 
         </Link>
 
         {/* links (desktop) */}
-        <ul className="hidden md:flex gap-6 text-sm font-medium uppercase tracking-wide">
-          {navLinks.map(link => (
-            <li key={link.to} className="flex items-center">
-              <Link to={link.to} className={`flex items-center gap-1 transition-colors ${isActive(link.to)}`}> 
-                <span>{link.icon}</span>
-                <span>{link.label}</span>
-              </Link>
-            </li>
-          ))}
+        <ul   className="
+    flex flex-col  items-center gap-4        /* mobile: вертикально */
+    md:flex-row md:gap-6 md:text-xs
+    font-medium uppercase tracking-wide
+  ">
+        {navLinks.map(link => (
+          <li key={link.to}>
+               <Link
+                to={link.to}
+                className={`flex items-center gap-1 transition-colors ${isActive(link.to)}`}>  
+        <span>{link.icon}</span>
+        <span>{link.label}</span>
+      </Link>
+    </li>
+  ))}
         </ul>
 
         {/* user */}
-        {username }
+        
+        <span className="hidden md:flex">{username }</span>
       </nav>
     </header>
   );

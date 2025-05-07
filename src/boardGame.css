@@ -1,6 +1,10 @@
 /* boardGame.css */
 
-
+@media (min-width: 868px) { /* md:640 → берем 768 пока в Tailwind */
+  .questions-wrapper {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+}
 
 
 
