@@ -1,14 +1,19 @@
-
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes,Navigate } from 'react-router-dom';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import Navigation from "./components/Navigation";
 import { motion } from "framer-motion";
-import Home from './pages/Home';  // Главная страница с RoadMap
+import Home from "./pages/Home"; // Главная страница с RoadMap
 import Games from "./pages/Games";
-import BoardGameHome from './pages/BoardGame/BoardGameHome';  // Старт игры
-import PuzzleStage from './pages/BoardGame/PuzzleStage';  // Страница с уровнями игры
-import SpinnerGame from './pages/Spinner/SpinnerGame';  // Страница с игрой "Спиннер"
-import BlogPage from './pages/BlogPage';
+import BoardGameHome from "./pages/BoardGame/BoardGameHome"; // Старт игры
+import PuzzleStage from "./pages/BoardGame/PuzzleStage"; // Страница с уровнями игры
+import SpinnerGame from "./pages/Spinner/SpinnerGame"; // Страница с игрой "Спиннер"
+import BlogPage from "./pages/BlogPage";
+import WaterSafetyDrawing from "./pages/WaterSafetyDrawing/WaterSafetyDrawing";
 function App() {
   return (
     <Router>
@@ -32,6 +37,10 @@ function App() {
             {/* <Route path="/results" element={<BoardGameHome />} /> */}
             <Route path="/board-game/:stageId" element={<PuzzleStage />} />
             <Route path="/about-me/" element={<BlogPage />} />
+            <Route
+              path="/water-safety-drawing/"
+              element={<WaterSafetyDrawing />}
+            />
             <Route path="*" element={<Navigate to="/home" replace />} />
 
             {/* <Route path="/login" element={<AuthCard />} /> */}
