@@ -18,8 +18,10 @@ import Gian from "../assets/Gian.png";
 import RhymingBingo from "../components/games/RhymingBingo";
 import FlipAFix from "../components/games/FlipAFix";
 import Dino from "../assets/Mickey.png";
+import Dolphin from "../assets/dolphin.png";
 import BoardGameHome from "./BoardGame/BoardGameHome";
 import SpinnerGame from "./Spinner/SpinnerGame";
+import WaterSafetyDrawing from "./WaterSafetyDrawing/WaterSafetyDrawing";
 const games = [
   // { title: "Letter Sound Match", component: LetterSoundMatch },
   // { title: "Phonics Maze", component: PhonicsMaze },
@@ -32,6 +34,7 @@ const games = [
   // { title: "Flip A Fix", component: FlipAFix },
   { title: "Викторина с Микки", component: BoardGameHome },
   { title: "Колесо вопросов с Томом", component: SpinnerGame },
+  {title: "Безопасность на воде с Дельфинчиком Лорри", component: WaterSafetyDrawing },
 ];
 
 const playSound = () => {
@@ -49,7 +52,8 @@ const cartoonImages = [
   // Shinchan,
   // Doraemon,
   Mickey,
-  Tom
+  Tom,
+  Dolphin
 ];
 
 const Games = () => {

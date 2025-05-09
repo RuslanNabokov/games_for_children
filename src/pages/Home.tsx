@@ -28,12 +28,6 @@ export default function Home() {
         >
           Главная
         </button>
-        <button
-          className={`px-4 py-2 rounded-lg ${activeTab==='прогресс' ? 'bg-pink-500 text-white' : 'bg-white shadow'}`}
-          onClick={() => setActiveTab('прогресс')}
-        >
-          Прогресс
-        </button>
       </div>
 
       {/* Содержимое вкладок */}
