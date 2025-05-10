@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import RoadMap from '../components/RoadMap'; // тот же компонент, но надписи теперь задаются здесь
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const games = [
  // { id: 1, title: 'Игра с Дино', totalSteps: 4 },
@@ -24,6 +25,8 @@ export default function Home() {
 
 
       {/* Содержимое вкладок */}
+
+
       {activeTab === 'главная' && (
         <div className="text-center space-y-6">
           <h1 className="text-4xl font-bold text-pink-700">🌈 Обучаемся весело!</h1>
@@ -39,24 +42,14 @@ export default function Home() {
         </div>
       )}
 
-      {activeTab === 'прогресс' && (
-        <div className="w-full max-w-2xl space-y-12">
-          <h2 className="text-3xl font-bold text-purple-700 mb-6 text-center">
-            Ваш прогресс
-          </h2>
-          {games.map(game => (
-            <div key={game.id} className="bg-white p-6 rounded-xl shadow-lg">
-              <h3 className="text-xl font-semibold text-purple-600 mb-4">
-                {game.title}
-              </h3>
-              <RoadMap
-                currentStep={stepsCompleted[game.id] || 0}
-                totalSteps={game.totalSteps}
-              />
-            </div>
-          ))}
-        </div>
-      )}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mb-8">
+        <img
+          src="/assets/family-lg.png"
+          alt="Семья гуляет у реки"
+          className="mx-auto w-64 h-auto lg:w-96 shadow-lg rounded-lg"
+        />
+      </motion.div>
+
     </div>
   );
 }

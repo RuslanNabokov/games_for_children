@@ -1,66 +1,57 @@
 // src/pages/BoardGame/PuzzleStage.tsx
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { puzzles } from './puzzlesData';
+import { puzzles, SequenceQuestion } from './puzzlesData';
 import '../../boardGame.css';
 
-interface Answers {
-  [key: number]: string[]; // индекс вопроса → выбранные ответы
-}
+interface Answers { [key: number]: string[]; }
 
 export default function PuzzleStage() {
-  /* --------------------------------------------------
-   * 1. ПАРАМЕТРЫ РОУТА И ПОДГОТОВКА ДАННЫХ
-   * -------------------------------------------------- */
   const { stageId } = useParams<{ stageId: string }>();
   const stageIndex  = Number(stageId || 1);
   const stage       = puzzles.find(p => p.id === stageIndex);
   const nav         = useNavigate();
 
-  /* --------------------------------------------------
-   * 2. ХУКИ STATE / EFFECT (всегда вызываются!)
-   * -------------------------------------------------- */
-  const [answers,  setAnswers]  = useState<Answers>({});
-  const [finished, setFinished] = useState(false);
+  const [answers,       setAnswers]       = useState<Answers>({});
+  const [finished,      setFinished]      = useState(false);
+  const [seqAnswer,     setSeqAnswer]     = useState<string[]>([]);
+  const [shuffledSteps, setShuffledSteps] = useState<string[]>([]);
 
-  // При смене этапа очищаем состояние
+  // при смене этапа сбрасываем прогресс
   useEffect(() => {
     setAnswers({});
     setFinished(false);
+    setSeqAnswer([]);
+    setShuffledSteps([]);
   }, [stageIndex]);
 
-  /* --------------------------------------------------
-   * 3. РАННЯЯ ПРОВЕРКА НАЛИЧИЯ ДАННЫХ (допустимо один раз)
-   * -------------------------------------------------- */
-  if (!stage) return <p>Этап не найден.</p>;
+  // инициализируем sequence временную логику
+  useEffect(() => {
+    if (stage?.questions[0].type === 'sequence') {
+      const seqQ = stage.questions[0] as SequenceQuestion;
+      setSeqAnswer([]);
+      setShuffledSteps([...seqQ.steps].sort(() => Math.random() - 0.5));
+    }
+  }, [stage]);
 
-  /* --------------------------------------------------
-   * 4. ЛОКАЛЬНАЯ КОНСТАНТА С ЭМОДЗИ
-   * -------------------------------------------------- */
-  const emojiMap: Record<string, string> = {
-    'Белка': '🐿️',  'Медведь': '🐻',  'Заяц': '🐇',   'Лиса': '🦊',
-    'Утка': '🦆',   'Рыба': '🐟',    'Бобр': '🦫',   'Удочка': '🎣',
-    'Книга': '📚',  'Нож': '🔪'
-  };
+  if (!stage) {
+    return <p>Этап не найден.</p>;
+  }
 
-  /* --------------------------------------------------
-   * 5. ФУНКЦИИ ДЛЯ ОБНОВЛЕНИЯ ОТВЕТОВ
-   * -------------------------------------------------- */
+  // Функция для mcq & guess
   const handleOptionChange = (qIdx: number, value: string, multiple: boolean) => {
     setAnswers(prev => {
-      const current = prev[qIdx] || [];
+      const curr = prev[qIdx] || [];
       const updated = multiple
-        ? current.includes(value)
-          ? current.filter(x => x !== value)
-          : [...current, value]
+        ? curr.includes(value)
+          ? curr.filter(x => x !== value)
+          : [...curr, value]
         : [value];
       return { ...prev, [qIdx]: updated };
     });
   };
 
-  /* --------------------------------------------------
-   * 6. ПРОВЕРКА КОРРЕКТНОСТИ ЭТАПА (всегда вызывается!)
-   * -------------------------------------------------- */
+  // Проверяем mcq/guess
   const isStageCorrect = useMemo(() => {
     return stage.questions.every((q, idx) => {
       const ans = answers[idx] || [];
@@ -70,16 +61,25 @@ export default function PuzzleStage() {
       if (q.type === 'guess') {
         return (ans[0] || '').trim().toLowerCase() === q.answer.toLowerCase();
       }
-      return false;
+      return true;
     });
   }, [answers, stage.questions]);
 
-  /* --------------------------------------------------
-   * 7. ЗАВЕРШЕНИЕ/ПЕРЕХОД МЕЖДУ ЭТАПАМИ
-   * -------------------------------------------------- */
+  // Проверяем sequence
+  const isSequenceCorrect = () => {
+    const seqQ = stage.questions[0] as SequenceQuestion;
+    if (seqAnswer.length !== seqQ.steps.length) return false;
+    return seqAnswer.every((step, idx) => seqQ.steps[seqQ.correctOrder[idx]] === step);
+  };
+
+  // Завершение этапа
   const handleComplete = () => {
+    if (stage.questions[0].type === 'sequence' && !isSequenceCorrect()) {
+      alert('Неверная последовательность. Попробуй ещё.');
+      return;
+    }
     if (!isStageCorrect) {
-      alert('Ответ неверен. Попробуй ещё раз.');
+      alert('Ответ неверен. Попробуй ещё.');
       return;
     }
     const next = stageIndex + 1;
@@ -90,21 +90,24 @@ export default function PuzzleStage() {
     }
   };
 
-  /* --------------------------------------------------
-   * 8. ПОМОЩЬ: отделяем текст от эмодзи
-   * -------------------------------------------------- */
-  const splitLabel = (opt: string) => {
-    const parts      = opt.trim().split(' ');
-    const maybeEmoji = parts[parts.length - 1];
-    const isEmoji    = /\p{Extended_Pictographic}/u.test(maybeEmoji);
-    const base       = isEmoji ? parts.slice(0, -1).join(' ') : opt;
-    const emoji      = emojiMap[base] || (isEmoji ? maybeEmoji : '');
-    return { base, emoji };
+  // Drag&Drop для sequence
+  const onDragStart = (e: React.DragEvent, step: string) => e.dataTransfer.setData('text/plain', step);
+  const onDragOver  = (e: React.DragEvent) => e.preventDefault();
+  const onDrop      = (e: React.DragEvent, idx: number) => {
+    e.preventDefault();
+    const step = e.dataTransfer.getData('text/plain');
+    if (step && !seqAnswer.includes(step)) {
+      const arr = [...seqAnswer];
+      arr[idx] = step;
+      setSeqAnswer(arr);
+    }
+  };
+  const resetSequence = () => {
+    const seqQ = stage.questions[0] as SequenceQuestion;
+    setSeqAnswer([]);
+    setShuffledSteps([...seqQ.steps].sort(() => Math.random() - 0.5));
   };
 
-  /* --------------------------------------------------
-   * 9. ЭКРАН ПОЗДРАВЛЕНИЯ (после всех хуков!)
-   * -------------------------------------------------- */
   if (finished) {
     return (
       <div className="puzzle-complete p-8 text-center bg-green-50 rounded-xl shadow-lg">
@@ -120,9 +123,6 @@ export default function PuzzleStage() {
     );
   }
 
-  /* --------------------------------------------------
-   * 10. ОСНОВНОЙ РЕНДЕР ЭТАПА
-   * -------------------------------------------------- */
   return (
     <div className="puzzle-stage">
       <h2 className="text-3xl font-bold mb-8">
@@ -132,48 +132,92 @@ export default function PuzzleStage() {
       <div className="questions-wrapper">
         {stage.questions.map((q, i) => (
           <div key={i} className="question p-6 bg-white rounded-xl shadow-lg">
-            {Array.isArray(q.images)
-              ? q.images.map(src => (
-                  <img key={src} src={src} alt="ребус" className="mb-4 w-full max-w-xs mx-auto" />
-                ))
-              : q.images && (
-                  <img src={q.images} alt="ребус" className="mb-4 w-full max-w-xs mx-auto" />
-                )}
+            {/* Изображения */}
+            {q.images && (
+              Array.isArray(q.images)
+                ? q.images.map(src => (
+                    <img
+                      key={src}
+                      src={src}
+                      alt="иллюстрация"
+                      className="mb-4 w-full max-w-sm mx-auto rounded"
+                    />
+                  ))
+                : typeof q.images === 'string' && (
+                    <img
+                      src={q.images}
+                      alt="иллюстрация"
+                      className="mb-4 w-full max-w-sm mx-auto rounded"
+                    />
+                  )
+            )}
+
             <p className="mb-4 text-lg font-medium">{q.prompt}</p>
 
+            {/* Sequence */}
+            {q.type === 'sequence' && (
+              <>
+                <div className="flex flex-col md:flex-row gap-6">
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-2">Доступные шаги</h4>
+                    {shuffledSteps.map(step => (
+                      <div
+                        key={step}
+                        draggable
+                        onDragStart={e => onDragStart(e, step)}
+                        className="px-4 py-2 bg-gray-100 rounded mb-2 cursor-grab"
+                      >
+                        {step}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-2">Порядок действий</h4>
+                    {(q as SequenceQuestion).steps.map((_, idx) => (
+                      <div
+                        key={idx}
+                        onDragOver={onDragOver}
+                        onDrop={e => onDrop(e, idx)}
+                        className="px-4 py-6 bg-gray-50 rounded border-2 border-dashed mb-2 text-center min-h-[3rem]"
+                      >
+                        {seqAnswer[idx] || '\u00A0'}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  onClick={resetSequence}
+                  className="mt-4 px-4 py-2 bg-yellow-400 text-white rounded hover:bg-yellow-500 transition"
+                >
+                  Сбросить
+                </button>
+              </>
+            )}
 
             {/* MCQ */}
             {q.type === 'mcq' && (
               <div className="mt-4 flex flex-wrap gap-4">
-                {q.options.map(opt => {
-                  const { base, emoji } = splitLabel(opt);
-                  const selected  = answers[i]?.includes(opt);
-                  const isCorrect = q.correct.includes(opt);
-                  const btnClass  = selected
-                    ? isCorrect ? 'border-green-600 bg-green-100' : 'border-red-600 bg-red-100'
-                    : 'border-gray-300 hover:bg-gray-100';
-                  return (
-                    <button
-                      key={opt}
-                      onClick={() => handleOptionChange(i, opt, q.correct.length > 1)}
-                      className={`px-6 py-3 rounded-lg border-2 focus:outline-none transition-colors text-lg ${btnClass}`}
-                    >
-                      {base}{emoji && <span className="ml-2 text-xl">{emoji}</span>}
-                    </button>
-                  );
-                })}
+                {q.options.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={() => handleOptionChange(i, opt, q.correct.length > 1)}
+                    className={`px-6 py-3 rounded-lg border-2 transition-colors text-lg border-gray-300 hover:bg-gray-100 ${answers[i]?.includes(opt) ? (q.correct.includes(opt) ? 'bg-green-100 border-green-600' : 'bg-red-100 border-red-600') : ''}`}
+                  >
+                    {opt}
+                  </button>
+                ))}
               </div>
             )}
 
-            {/* GUESS */}
+            {/* Guess */}
             {q.type === 'guess' && (() => {
-              const value       = answers[i]?.[0] || '';
-              const correctFull = q.answer.toLowerCase();
-              const prefixValid = correctFull.startsWith(value.toLowerCase());
-              const inputClass  = value === ''
+              const value = answers[i]?.[0] || '';
+              const correct = q.answer.toLowerCase();
+              const validPrefix = correct.startsWith(value.toLowerCase());
+              const inputClass = value === ''
                 ? 'border-gray-300'
-                : prefixValid
-                  ? value.toLowerCase() === correctFull
+                : validPrefix
+                  ? value.toLowerCase() === correct
                     ? 'border-green-600 bg-green-100'
                     : 'border-green-500'
                   : 'border-red-600 bg-red-100';
@@ -192,9 +236,9 @@ export default function PuzzleStage() {
       </div>
 
       <button
-        className="btn-next mt-10 px-8 py-3 text-xl"
         onClick={handleComplete}
-        disabled={!isStageCorrect}
+        disabled={stage.questions[0].type === 'sequence' ? !isSequenceCorrect() : !isStageCorrect}
+        className="btn-next mt-10 px-8 py-3 text-xl bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 transition"
       >
         {stage.id < puzzles.length ? 'Следующий этап' : 'Завершить игру'}
       </button>
