@@ -41,11 +41,9 @@ export default function Navigation() {
 
   return (
     <header className="bg-slate-800 text-white shadow-sm sticky top-0 z-50">
-      <nav className="container mx-auto flex flex-col md:flex-row items-center md:justify-between gap-3 px-4 py-3 ">
+      <nav className="container mx-auto flex flex-col md:flex-row items-center md:justify-center gap-3 px-4 py-3 ">
         {/* brand */}
-        <Link to="/home" className="hidden md:flex  font-semibold tracking-wide select-none">
-          Обучаемся и играем 
-        </Link>
+
 
         {/* links (desktop) */}
         <ul   className="
@@ -65,9 +63,9 @@ export default function Navigation() {
   ))}
         </ul>
 
-        {/* user */}
+        {/*  <span className="hidden md:flex">{username }</span> */}
         
-        <span className="hidden md:flex">{username }</span>
+
       </nav>
     </header>
   );

@@ -4,7 +4,7 @@ import RoadMap from '../components/RoadMap'; // тот же компонент, 
 import { Link } from 'react-router-dom';
 
 const games = [
-  { id: 1, title: 'Игра с Дино', totalSteps: 4 },
+ // { id: 1, title: 'Игра с Дино', totalSteps: 4 },
   // { id: 2, title: 'Игра с Мишкой', totalSteps: 4 },
   // { id: 3, title: 'Игра с Пёсиком', totalSteps: 6 },
 ];
@@ -21,14 +21,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-100 to-yellow-100 flex flex-col items-center p-6">
       {/* Вкладки */}
-      <div className="flex space-x-4 mb-8">
-        <button
-          className={`px-4 py-2 rounded-lg ${activeTab==='главная' ? 'bg-pink-500 text-white' : 'bg-white shadow'}`}
-          onClick={() => setActiveTab('главная')}
-        >
-          Главная
-        </button>
-      </div>
+
 
       {/* Содержимое вкладок */}
       {activeTab === 'главная' && (
