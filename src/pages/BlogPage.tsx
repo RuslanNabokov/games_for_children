@@ -14,7 +14,7 @@ export default function AboutMe() {
           />
           <div>
             <h1 className="text-3xl font-bold mb-1">Уварова Анна Александровна</h1>
-            <p className="text-pink-600 font-semibold mb-2">Студентка колледжа МПГУ, г. Москва</p>
+            <p className="text-pink-600 font-semibold mb-2">Выпускник колледжа МПГУ, г. Москва</p>
             <div className="flex items-center gap-3 text-gray-600 text-sm">
               <MapPin size={16} />
               <span>Москва, Россия</span>
